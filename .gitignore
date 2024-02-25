@@ -9,3 +9,14 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+sample.jpeg
+build/OpenCVBlurCMake
+build/.cmake/api/v1/query/client-vscode/query.json
+build/.cmake/api/v1/reply/cache-v2-e07ae7a7f25e70b0a9e6.json
+build/.cmake/api/v1/reply/cmakeFiles-v1-b2bcd7c8409c7b8e7394.json
+build/.cmake/api/v1/reply/codemodel-v2-d7eab416a3d16f4724d2.json
+build/.cmake/api/v1/reply/directory-.-Debug-f5ebdc15457944623624.json
+build/.cmake/api/v1/reply/index-2024-02-25T19-03-48-0233.json
+build/.cmake/api/v1/reply/target-OpenCVBlurCMake-Debug-22d8c0ae8ed48f09be0f.json
+build/.cmake/api/v1/reply/toolchains-v1-99265b04de7ada3aac9e.json
+BusyStreet1.jpeg
