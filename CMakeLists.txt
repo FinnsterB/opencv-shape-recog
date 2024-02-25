@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.5)
+project( BlurDemo )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( OpenCVBlurCMake Main.cpp )
+target_link_libraries( OpenCVBlurCMake ${OpenCV_LIBS} )
