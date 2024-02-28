@@ -10,7 +10,7 @@
 class Parser
 {
 private:
-    /* data */
+    SpecFinder::ColorSpecs parseColor(std::string& token);
 public:
     Parser(/* args */);
     ~Parser();

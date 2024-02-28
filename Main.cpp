@@ -3,6 +3,8 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
+#include "SpecFinder.h"
+
 int threshold;
 cv::Mat image;
 cv::Mat originalImage;
@@ -10,18 +12,27 @@ cv::Mat contourOutput;
 cv::Mat contourImage;
 
 int main(int argc, const char * argv[]) {
+    
+	cv::VideoCapture cap(0);
 
-    image= cv::imread("../sample.jpeg");
+    if(!cap.isOpened()){
+        std::cout << "Geen camera gevonden" << std::endl;
+        return -1;
+    }
 	
-    if (!image.data) {
-        std::cout << "Image file not found\n";
-        return 1;
+    while (true)
+    {
+        cap.read(image);
+        cv::imshow("Threshold Image", image);
+	    //cv::imshow("Output Image", contourImage);
+
+        if(cv::waitKey(30) == 27){
+            break;
+        }
+    
     }
     
-
-	cv::imshow("Threshold Image", image);
-	cv::imshow("Output Image", contourImage);
-    cv::waitKey(0);
+    
 
     return 0;
 }
