@@ -45,12 +45,14 @@ int main(int argc, const char * argv[]) {
     while (true)
     {
         cap.read(image);
-        cv::imshow("Threshold Image", image);
+        
         for (SpecFinder s : specFinders)
         {
+            contours.clear();
             s.findSpec(image, contours, hierarchy);
+            cv::drawContours(image, contours, -1, cv::Scalar(255,0,0), 3);
         }
-        
+        cv::imshow("Threshold Image", image);
 	    //cv::imshow("Output Image", contourImage);
         char key = cv::waitKey(20);
         if(key == 27){

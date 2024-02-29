@@ -66,18 +66,66 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>> conto
         break;
     }
 
-    cv::Mat dilationMat(3,3,src.type(),255);
+    cv::Mat dilationMat(5,5,src.type(),255);
+    cv::erode(src, src, dilationMat);
+
     cv::dilate(src, src, dilationMat);
 
     cv::imshow("Filtered image", src);
 
-
-    //Threshold
-
-
+    cv::Canny(src,src, 100,100);
 
     //Find contours
-    findContours( src, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE );
+    std::vector<std::vector<cv::Point>> allContours;
+
+    findContours( src, allContours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE );
 
     //Find required shape
+    switch (spec.getShape())
+    {
+    case SQUARE:
+        for (std::vector<cv::Point> contour : allContours)
+        {
+            if(contour.size() == 4){
+                //detect square better
+                contours.push_back(contour);
+            }
+        }
+        
+        break;
+    case RECTANGLE:
+        for (std::vector<cv::Point> contour : allContours)
+        {
+            if(contour.size() == 4){
+                //detect square better
+                contours.push_back(contour);
+            }
+        }
+        
+        break;
+    case TRIANGLE:
+        for (std::vector<cv::Point> contour : allContours)
+        {
+            if(contour.size() == 3){
+                //detect square better
+                contours.push_back(contour);
+            }
+        }
+        
+        break;
+    case CIRCLE:
+        for (std::vector<cv::Point> contour : allContours)
+        {
+            if(contour.size() > 6){
+                //detect square better
+                contours.push_back(contour);
+            }
+        }
+        
+        break;
+    
+    default:
+        break;
+    }
+
 }
