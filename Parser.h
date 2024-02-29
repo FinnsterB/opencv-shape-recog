@@ -10,11 +10,13 @@
 class Parser
 {
 private:
-    SpecFinder::ColorSpecs parseColor(std::string& token);
+    static int parseColor(std::string& token);
+    static int parseShape(std::string &token);
+
 public:
     Parser(/* args */);
     ~Parser();
-    std::vector<SpecFinder> parse(const std::string& file);
+    static std::vector<SpecFinder> parse(const std::string& file);
 };
 
 #endif

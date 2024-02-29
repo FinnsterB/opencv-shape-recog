@@ -11,9 +11,10 @@
 class SpecFinder
 {
 private:
-    Specification spec;
+    
 public:
-    SpecFinder(/* args */);
+    SpecFinder();
+    SpecFinder(Specification& s);
     ~SpecFinder();
     enum ColorSpecs{
         UNKNOWN_COLOR,
@@ -30,16 +31,10 @@ public:
         RECTANGLE,
         TRIANGLE
     };
-    void findSpec(cv::Mat& src, std::vector<std::vector<cv::Point>> contours, std::vector<cv::Vec4i> hierarchy){
-        //Filter for color
-        
-        //Threshold
 
-        //Find contours
-        findContours( src, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE );
+    Specification spec;
 
-        //Find required shape
-    }
+    void findSpec(cv::Mat& src, std::vector<std::vector<cv::Point>> contours, std::vector<cv::Vec4i> hierarchy);
 };
 
 #endif
