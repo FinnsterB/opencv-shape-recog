@@ -13,10 +13,12 @@ cv::Mat originalImage;
 cv::Mat contourOutput;
 cv::Mat contourImage;
 std::vector<SpecFinder> specFinders;
+std::vector<std::vector<cv::Point>> contours;
+std::vector<cv::Vec4i> hierarchy;
 
 int main(int argc, const char * argv[]) {
     
-	cv::VideoCapture cap(0);
+	cv::VideoCapture cap(2);
 
     if(!cap.isOpened()){
         std::cout << "Geen camera gevonden" << std::endl;
@@ -30,7 +32,7 @@ int main(int argc, const char * argv[]) {
         //std::cout << "Parsed specs: " << std::endl;
         for (SpecFinder s : specFinders)
         {
-            std::cout << "Shape: " << std::to_string(s.spec.getShape()) << ", Color: " << std::to_string(s.spec.getColor()) << std::endl;
+            //std::cout << "Shape: " << std::to_string(s.spec.getShape()) << ", Color: " << std::to_string(s.spec.getColor()) << std::endl;
         }
         
     }
@@ -44,10 +46,20 @@ int main(int argc, const char * argv[]) {
     {
         cap.read(image);
         cv::imshow("Threshold Image", image);
+        for (SpecFinder s : specFinders)
+        {
+            s.findSpec(image, contours, hierarchy);
+        }
+        
 	    //cv::imshow("Output Image", contourImage);
-
-        if(cv::waitKey(20) == 27){
+        char key = cv::waitKey(20);
+        if(key == 27){
             break;
+        }else if(key == 'c'){
+            for (SpecFinder s : specFinders)
+            {
+                s.startCalibration();
+            }
         }
     
     }
