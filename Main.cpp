@@ -18,12 +18,32 @@ std::vector<cv::Vec4i> hierarchy;
 
 int main(int argc, const char * argv[]) {
     
-	cv::VideoCapture cap(2);
-
-    if(!cap.isOpened()){
-        std::cout << "Geen camera gevonden" << std::endl;
-        return -1;
+    cv::VideoCapture cap;
+    
+    for (size_t i = 4; i >= 0; i--)
+    {
+        try
+        {
+            cap = cv::VideoCapture(i);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        if(cap.isOpened()){
+            std::cout << "Camera gevonden!" << std::endl;
+            break;
+        }
     }
+    
+    if(!cap.isOpened()){
+        std::cout << "Geen camera gevonden!" << std::endl;
+        return 1;
+    }
+    
+	
+
+    
 	
     if(argc > 1){
         //Batch mode
@@ -45,15 +65,16 @@ int main(int argc, const char * argv[]) {
     while (true)
     {
         cap.read(image);
-        
+        originalImage = image.clone();
+
         for (SpecFinder s : specFinders)
         {
             contours.clear();
             s.findSpec(image, contours, hierarchy);
-            cv::drawContours(image, contours, -1, cv::Scalar(255,0,0), 3);
+            //cv::drawContours(image, contours, -1, cv::Scalar(255,0,0), 3);
         }
-        cv::imshow("Threshold Image", image);
-	    //cv::imshow("Output Image", contourImage);
+        cv::imshow("Threshold Image", originalImage);
+	    cv::imshow("Output Image", image);
         char key = cv::waitKey(20);
         if(key == 27){
             break;

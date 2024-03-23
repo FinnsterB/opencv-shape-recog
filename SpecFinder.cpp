@@ -40,6 +40,9 @@ void SpecFinder::startCalibration()
     cv::createTrackbar("ValHigh", "Threshold Image", nullptr, 255, valueHighSlider);
 }
 
+/**
+ *@brief Finds all shapes according to the specification of this SpecFinder instance
+*/
 void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>> contours, std::vector<cv::Vec4i> hierarchy)
 {
     cv::cvtColor(src, src, cv::COLOR_BGR2HSV);
@@ -86,7 +89,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>> conto
     case SQUARE:
         for (std::vector<cv::Point> contour : allContours)
         {
-            if(contour.size() == 4){
+            if(contour.size() == 4 && cv::arcLength(contour, true) > 500){
                 //detect square better
                 contours.push_back(contour);
             }
@@ -96,7 +99,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>> conto
     case RECTANGLE:
         for (std::vector<cv::Point> contour : allContours)
         {
-            if(contour.size() == 4){
+            if(contour.size() == 4 && cv::arcLength(contour, true) > 500){
                 //detect square better
                 contours.push_back(contour);
             }
@@ -106,7 +109,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>> conto
     case TRIANGLE:
         for (std::vector<cv::Point> contour : allContours)
         {
-            if(contour.size() == 3){
+            if(contour.size() == 3 && cv::arcLength(contour, true) > 500){
                 //detect square better
                 contours.push_back(contour);
             }
@@ -116,7 +119,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>> conto
     case CIRCLE:
         for (std::vector<cv::Point> contour : allContours)
         {
-            if(contour.size() > 6){
+            if(contour.size() > 6 && cv::arcLength(contour, true) > 500){
                 //detect square better
                 contours.push_back(contour);
             }
