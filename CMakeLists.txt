@@ -5,6 +5,9 @@ project( ShapeRecog )
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Enable debugging for Valgrind
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+
 # Function to enable warnings
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     # GCC/Clang warnings
