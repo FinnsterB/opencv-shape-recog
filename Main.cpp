@@ -11,6 +11,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <chrono>
 
 int threshold;
 cv::Mat image;

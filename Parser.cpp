@@ -12,7 +12,7 @@ Parser::~Parser()
 }
 
 /*static*/ std::vector<SpecFinder> Parser::parse(const std::string &file)
-{
+{   
     std::ifstream fileIn;
     std::string token;
     std::vector<SpecFinder> specFinders;

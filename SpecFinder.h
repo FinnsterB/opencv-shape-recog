@@ -8,10 +8,16 @@
 
 #include <vector>
 
+/**
+ * @brief The specFinder class finds the shape according to the specification stored in the spec variable.
+ * The main.cpp file holds a vector of SpecFinders and executes SpecFinder::findSpec() for each SpecFinder.
+ */
 class SpecFinder
 {
 private:
-    //Hue values for finding:
+    /**
+     * @brief HSV values for every color. They can be calibrated by pressing C on a openCV window.
+     */
     static int greenLow;
     static int greenHigh;
     static int greenSaturationLow;
@@ -44,6 +50,10 @@ public:
     SpecFinder();
     explicit SpecFinder(Specification& s);
     ~SpecFinder();
+
+    /**
+     * @brief All required colors
+     */
     enum ColorSpecs{
         UNKNOWN_COLOR,
         PINK,
@@ -51,6 +61,9 @@ public:
         YELLOW,
         GREEN
     };
+    /**
+     * @brief All required shapes
+     */
     enum ShapeSpecs{
         UNKNOWN_SHAPE,
         CIRCLE,
@@ -60,8 +73,14 @@ public:
         TRIANGLE
     };
 
+    /**
+     * @brief Specification this specFinder will use to find the shape.
+     */
     Specification spec;
 
+    /**
+     * @brief Shows the calibration windows with the sliders.
+     */
     static void startCalibration();
 
     /**
