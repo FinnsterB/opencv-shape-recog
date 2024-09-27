@@ -75,6 +75,61 @@ Parser::~Parser()
     return specFinders;
 }
 
+void Parser::parseLine(const std::string &line, std::vector<SpecFinder>& specFinders)
+{
+    std::stringstream ssLine(line);
+    std::string token = "";
+
+    ssLine >> token;
+
+    //Exit when user types exit
+    if(token == "exit"){
+        exit(0);
+    }
+
+    //Parsing first token of line
+    if(token != ""){
+        Specification spec;
+        spec.setShape(parseShape(token));
+
+        //Shape parser has an edge case where 2 tokens make up SEMICIRCLE. Luckily 
+        //the first token is unique so I'll just double check the last one;)
+        if (spec.getShape() == SpecFinder::SEMICIRCLE)
+        {
+            token = "";
+            ssLine >> token;
+            //Second check in case of SEMICIRCLE
+            if(parseShape(token) != SpecFinder::CIRCLE){
+                std::cout << "Fout! Er staat alleen het woord \"halve\" in de specificatie." << std::endl;
+            }
+
+        }
+        token = "";
+        ssLine >> token;
+        //Parse next token to get the color
+        if(token != ""){
+            spec.setColor(parseColor(token));
+        }
+        if(spec.getColor() != SpecFinder::UNKNOWN_COLOR && spec.getShape() != SpecFinder::UNKNOWN_SHAPE)
+        {
+            for(SpecFinder otherSpec : specFinders){
+                if (spec.getColor() == otherSpec.spec.getColor() && spec.getShape() == otherSpec.spec.getShape())
+                {
+                    return;
+                }
+                
+            }
+            
+            SpecFinder s(spec);
+            specFinders.push_back(s);
+        }else{
+            std::cout << "Fout! Verkeerde specificatie opgegeven!" << std::endl;
+        }
+
+
+    }
+}
+
 /**
  * @brief: Parses a single word token string, and returns
  * an int representing the SpecFinder::ColorSpecs enum.
@@ -113,6 +168,10 @@ Parser::~Parser()
     if(token == "cirkel")
     {
         return SpecFinder::CIRCLE;
+    }
+    else if (token == "driehoek")
+    {
+        return SpecFinder::TRIANGLE;
     }
     else if (token == "rechthoek")
     {

@@ -44,8 +44,51 @@ SpecFinder::~SpecFinder()
 {
 }
 
-void SpecFinder::startCalibration()
+/*static*/ void SpecFinder::startCalibration()
 {
+    std::string winNameGreen = "CalibrationGreen";
+    cv::namedWindow(winNameGreen);
+
+    //Inputs for green HSV
+    cv::createTrackbar("Green lower hue", winNameGreen, &greenLow, 180);
+    cv::createTrackbar("Green upper hue", winNameGreen, &greenHigh, 180);
+    cv::createTrackbar("Green lower saturation", winNameGreen, &greenSaturationLow, 255);
+    cv::createTrackbar("Green upper saturation", winNameGreen, &greenSaturationHigh, 255);
+    cv::createTrackbar("Green lower value", winNameGreen, &greenValueLow, 255);
+    cv::createTrackbar("Green upper value", winNameGreen, &greenValueHigh, 255);
+
+    std::string winNamePink = "CalibrationPink";
+    cv::namedWindow(winNamePink);
+    
+    //Inputs for pink HSV
+    cv::createTrackbar("Pink lower hue", winNamePink, &pinkLow, 180);
+    cv::createTrackbar("Pink upper hue", winNamePink, &pinkHigh, 180);
+    cv::createTrackbar("Pink lower saturation", winNamePink, &pinkSaturationLow, 255);
+    cv::createTrackbar("Pink upper saturation", winNamePink, &pinkSaturationHigh, 255);
+    cv::createTrackbar("Pink lower value", winNamePink, &pinkValueLow, 255);
+    cv::createTrackbar("Pink upper value", winNamePink, &pinkValueHigh, 255);
+
+    std::string winNameYellow = "CalibrationYellow";
+    cv::namedWindow(winNameYellow);
+    
+    //Inputs for Yellow HSV
+    cv::createTrackbar("Yellow lower hue", winNameYellow, &yellowLow, 180);
+    cv::createTrackbar("Yellow upper hue", winNameYellow, &yellowHigh, 180);
+    cv::createTrackbar("Yellow lower saturation", winNameYellow, &yellowSaturationLow, 255);
+    cv::createTrackbar("Yellow upper saturation", winNameYellow, &yellowSaturationHigh, 255);
+    cv::createTrackbar("Yellow lower value", winNameYellow, &yellowValueLow, 255);
+    cv::createTrackbar("Yellow upper value", winNameYellow, &yellowValueHigh, 255);
+
+    std::string winNameOrange = "CalibrationOrange";
+    cv::namedWindow(winNameOrange);
+    
+    //Inputs for pink HSV
+    cv::createTrackbar("Orange lower hue", winNameOrange, &orangeLow, 180);
+    cv::createTrackbar("Orange upper hue", winNameOrange, &orangeHigh, 180);
+    cv::createTrackbar("Orange lower saturation", winNameOrange, &orangeSaturationLow, 255);
+    cv::createTrackbar("Orange upper saturation", winNameOrange, &orangeSaturationHigh, 255);
+    cv::createTrackbar("Orange lower value", winNameOrange, &orangeValueLow, 255);
+    cv::createTrackbar("Orange upper value", winNameOrange, &orangeValueHigh, 255);
 }
 
 /**
@@ -81,7 +124,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
         break;
     }
 
-    cv::Mat dilationMat(5,5,src.type(),255);
+    //cv::Mat dilationMat(5,5,src.type(),255);
 
     //Find contours
     std::vector<std::vector<cv::Point>> allContours;
@@ -89,7 +132,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
     findContours( src, allContours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE );
     //std::cout << "Total contours: " << std::to_string(allContours.size()) << std::endl;
 
-    //Find required shape
+    //Call required shape function for this 
     switch (spec.getShape())
     {
     case TRIANGLE:
@@ -99,13 +142,12 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
             if(cv::arcLength(contour, true) < 100){
                 continue;
             }
-            std::vector<cv::Point> approx;
-            double epsilon = 0.02 * cv::arcLength(contour, true); // Contour approximation accuracy
-            cv::approxPolyDP(contour, approx, epsilon, true);
-            // Check if the polygon has 3 vertices
-            if (approx.size() == 3) {
+            if (findTriangle(contour))
+            {
                 contours.push_back(contour);
             }
+            
+            
         }
         break;
     case SQUARE:
@@ -116,48 +158,11 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
             {
                 continue;
             }
-            std::vector<cv::Point> approx;
-            double epsilon = 0.02 * cv::arcLength(contour, true); // Contour approximation accuracy
-            cv::approxPolyDP(contour, approx, epsilon, true);
-
-            // Check if the polygon has 4 vertices
-            if (approx.size() == 4) 
+            if (findSquare(contour))
             {
-                // Calculate the cosine of angles between the edges
-                bool isRectangle = true;
-                for (int j = 0; j < 4; j++) 
-                {
-                    cv::Point v1 = approx[j] - approx[(j + 1) % 4];
-                    cv::Point v2 = approx[(j + 2) % 4] - approx[(j + 1) % 4];
-                    double cosine = std::abs(v1.dot(v2) / (cv::norm(v1) * cv::norm(v2)));
-                    
-                    // A cosine close to 0 implies a right angle (90 degrees)
-                    if (cosine > 0.5) 
-                    { // Adjust threshold as needed
-                        isRectangle = false;
-                        break;
-                    }
-                }
-
-                if (isRectangle) {
-                    //Calculate side length a
-                    int dXa = abs(approx.at(0).x - approx.at(1).x);
-                    int dYa = abs(approx.at(0).y - approx.at(1).y);
-                    int aLength = sqrt(pow(dXa,2)+pow(dYa,2)); //Pythagorean theorem
-                    
-                    //Calculate side length b
-                    int dXb = abs(approx.at(1).x - approx.at(2).x);
-                    int dYb = abs(approx.at(1).y - approx.at(2).y);
-                    int bLength = sqrt(pow(dXb,2)+pow(dYb,2)); //Pythagorean theorem
-
-                    float errorMargin = 1.2;
-                    //Check if sides are equal within margin epsilon
-                    if(aLength > bLength/errorMargin && aLength < bLength*errorMargin){
-                        std::cout << "Square found with aLength: " << aLength << " and bLength: " << bLength << std::endl;
-                        contours.push_back(contour);
-                    }
-                }
+                contours.push_back(contour);
             }
+            
         }
         
         break;
@@ -168,73 +173,210 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
             if(cv::arcLength(contour, true) < 100){
                 continue;
             }
-            std::vector<cv::Point> approx;
-            double epsilon = 0.02 * cv::arcLength(contour, true); // Contour approximation accuracy
-            cv::approxPolyDP(contour, approx, epsilon, true);
-            //std::cout << "Poly size: " << approx.size() << std::endl;
-            // Check if the polygon has 4 vertices
-            if (approx.size() == 4) {
-                // Calculate the cosine of angles between the edges
-                bool isRectangle = true;
-                for (int j = 0; j < 4; j++) {
-                    cv::Point v1 = approx[j] - approx[(j + 1) % 4];
-                    cv::Point v2 = approx[(j + 2) % 4] - approx[(j + 1) % 4];
-                    double cosine = std::abs(v1.dot(v2) / (cv::norm(v1) * cv::norm(v2)));
-                    
-                    // A cosine close to 0 implies a right angle (90 degrees)
-                    if (cosine > 0.5) { // Adjust threshold as needed
-                        isRectangle = false;
-                        break;
-                    }
-                }
-
-                if (isRectangle) {
-                    //Calculate side length a
-                    int dXa = abs(approx.at(0).x - approx.at(1).x);
-                    int dYa = abs(approx.at(0).y - approx.at(1).y);
-                    int aLength = sqrt(pow(dXa,2)+pow(dYa,2)); //Pythagorean theorem
-
-                    //Calculate side length b
-                    int dXb = abs(approx.at(1).x - approx.at(2).x);
-                    int dYb = abs(approx.at(1).y - approx.at(2).y);
-                    int bLength = sqrt(pow(dXb,2)+pow(dYb,2)); //Pythagorean theorem
-
-                    float errorMargin = 1.2;
-                    //Check if sides are not equal within margin epsilon
-                    if(!(aLength > bLength/errorMargin && aLength < bLength*errorMargin)){
-                        std::cout << "Rectangle found with aLength: " << aLength << " and bLength: " << bLength << std::endl;
-                        contours.push_back(contour);
-                    }
-                }
+            if (findRectangle(contour))
+            {
+                contours.push_back(contour);
             }
+            
         }
         
         break;
     case CIRCLE:
-        
         for (std::vector<cv::Point> contour : allContours)
         {
             //Discard all open contours and small contours
             if(cv::arcLength(contour, true) < 100){
                 continue;
             }
-            //Get area and perimeter
-            double area = cv::contourArea(contour);
-            double perimeter = cv::arcLength(contour, true);
-
-            // Compute circularity: 4 * PI * Area / Perimeter^2
-            double circularity = 4 * 3.1415 * area / (perimeter * perimeter);
-
-            //Circularity should be close to 1
-            if(circularity > 0.8 && circularity <= 1.2){
+            if (findCircle(contour))
+            {
+                contours.push_back(contour);
+            }   
+        }
+        
+        break;
+    case SEMICIRCLE:
+        for (std::vector<cv::Point> contour : allContours)
+        {
+            //Discard all open contours and small contours
+            if(cv::arcLength(contour, true) < 100){
+                continue;
+            }
+            if(findSemicircle(contour)){
                 contours.push_back(contour);
             }
         }
         
         break;
-    
     default:
         break;
     }
 
+}
+
+bool SpecFinder::findRectangle(std::vector<cv::Point>& contour)
+{
+    std::vector<cv::Point> approx;
+    double epsilon = 0.02 * cv::arcLength(contour, true); // Contour approximation accuracy
+    cv::approxPolyDP(contour, approx, epsilon, true);
+    // Check if the polygon has 4 vertices
+    if (approx.size() == 4) {
+        // Calculate the cosine of angles between the edges
+        bool isRectangle = true;
+        for (int j = 0; j < 4; j++) {
+            cv::Point v1 = approx[j] - approx[(j + 1) % 4];
+            cv::Point v2 = approx[(j + 2) % 4] - approx[(j + 1) % 4];
+            double cosine = std::abs(v1.dot(v2) / (cv::norm(v1) * cv::norm(v2)));
+            
+            // A cosine close to 0 implies a right angle (90 degrees)
+            if (cosine > 0.5) { // Adjust threshold as needed
+                isRectangle = false;
+                break;
+            }
+        }
+
+        if (isRectangle) {
+            //Calculate side length a
+            int dXa = abs(approx.at(0).x - approx.at(1).x);
+            int dYa = abs(approx.at(0).y - approx.at(1).y);
+            int aLength = sqrt(pow(dXa,2)+pow(dYa,2)); //Pythagorean theorem
+
+            //Calculate side length b
+            int dXb = abs(approx.at(1).x - approx.at(2).x);
+            int dYb = abs(approx.at(1).y - approx.at(2).y);
+            int bLength = sqrt(pow(dXb,2)+pow(dYb,2)); //Pythagorean theorem
+
+            float errorMargin = 1.2;
+            //Check if sides are not equal within margin epsilon
+            if(!(aLength > bLength/errorMargin && aLength < bLength*errorMargin)){
+                //std::cout << "Rectangle found with aLength: " << aLength << " and bLength: " << bLength << std::endl;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool SpecFinder::findSquare(std::vector<cv::Point>& contour)
+{
+    //Approximate the contour to simplify it
+    std::vector<cv::Point> approx;
+    double epsilon = 0.02 * cv::arcLength(contour, true); // Contour approximation accuracy
+    cv::approxPolyDP(contour, approx, epsilon, true);
+
+    // Check if the polygon has 4 vertices
+    if (approx.size() == 4) 
+    {
+        // Calculate the cosine of angles between the edges
+        bool isRectangle = true;
+        for (int j = 0; j < 4; j++) 
+        {
+            cv::Point v1 = approx[j] - approx[(j + 1) % 4];
+            cv::Point v2 = approx[(j + 2) % 4] - approx[(j + 1) % 4];
+            double cosine = std::abs(v1.dot(v2) / (cv::norm(v1) * cv::norm(v2)));
+            
+            // A cosine close to 0 implies a right angle (90 degrees)
+            if (cosine > 0.5) 
+            { // Adjust threshold as needed
+                isRectangle = false;
+                break;
+            }
+        }
+
+        if (isRectangle) {
+            //Calculate side length a
+            int dXa = abs(approx.at(0).x - approx.at(1).x);
+            int dYa = abs(approx.at(0).y - approx.at(1).y);
+            int aLength = sqrt(pow(dXa,2)+pow(dYa,2)); //Pythagorean theorem
+            
+            //Calculate side length b
+            int dXb = abs(approx.at(1).x - approx.at(2).x);
+            int dYb = abs(approx.at(1).y - approx.at(2).y);
+            int bLength = sqrt(pow(dXb,2)+pow(dYb,2)); //Pythagorean theorem
+
+            float errorMargin = 1.2;
+            //Check if sides are equal within margin epsilon
+            if(aLength > bLength/errorMargin && aLength < bLength*errorMargin){
+                //std::cout << "Square found with aLength: " << aLength << " and bLength: " << bLength << std::endl;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool SpecFinder::findTriangle(std::vector<cv::Point>& contour)
+{
+    std::vector<cv::Point> approx;
+    double epsilon = 0.02 * cv::arcLength(contour, true); // Contour approximation accuracy
+    cv::approxPolyDP(contour, approx, epsilon, true);
+    // Check if the polygon has 3 vertices
+    if (approx.size() == 3) {
+        return true;
+    }
+    return false;
+}
+
+bool SpecFinder::findSemicircle(std::vector<cv::Point>& contour)
+{
+
+    // Approximate the contour to reduce noise
+    std::vector<cv::Point> approx;
+    double epsilon = 0.02 * cv::arcLength(contour, true);  // Approximation accuracy
+    cv::approxPolyDP(contour, approx, epsilon, true);
+
+    // Fit a minimum enclosing circle
+    cv::Point2f center;
+    float radius;
+    cv::minEnclosingCircle(contour, center, radius);
+
+    // Calculate contour area and circularity
+    double contourArea = cv::contourArea(contour);
+    double circleArea = 3.1415 * radius * radius;
+    double circularity = contourArea / circleArea;
+
+
+    //Circularity should be close to 0.5 for a semicircle
+    if(circularity > 0.4 && circularity <= 0.6){
+        //Check for the long line in the contour
+        // Analyze the symmetry: Check the number of points forming the arc (more on one side)
+        int arcPoints = 0, straightPoints = 0;
+
+        // We assume that points near the diameter will be horizontally aligned
+        float errorMargin = 0.1;
+        for (size_t j = 0; j < contour.size(); j++) {
+            if (std::abs(contour.at(j).y - center.y) < radius * errorMargin) {
+                straightPoints++;
+            } else {
+                arcPoints++;
+            }
+        }
+
+        // Check if there are significantly more arc points than straight points
+        if (arcPoints > straightPoints) {
+            // Likely a semi-circle
+            //Check if there's no sneaky rectangle
+            if (!findRectangle(contour))
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool SpecFinder::findCircle(std::vector<cv::Point>& contour)
+{
+    //Get area and perimeter
+    double area = cv::contourArea(contour);
+    double perimeter = cv::arcLength(contour, true);
+
+    // Compute circularity: 4 * PI * Area / Perimeter^2
+    double circularity = 4 * 3.1415 * area / (perimeter * perimeter);
+
+    //Circularity should be close to 1
+    if(circularity > 0.8 && circularity <= 1.2){
+        return true;
+    }
+    return false;
 }

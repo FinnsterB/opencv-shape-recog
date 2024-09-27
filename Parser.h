@@ -17,6 +17,7 @@ public:
     Parser(/* args */);
     ~Parser();
     static std::vector<SpecFinder> parse(const std::string& file);
+    static void parseLine(const std::string& line, std::vector<SpecFinder>& specFinders);
 };
 
 #endif
