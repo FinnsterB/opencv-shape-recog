@@ -10,8 +10,8 @@
 class Parser
 {
 private:
-    static int parseColor(std::string& token);
-    static int parseShape(std::string &token);
+    static int parseColor(const std::string& token);
+    static int parseShape(const std::string &token);
 
 public:
     Parser(/* args */);

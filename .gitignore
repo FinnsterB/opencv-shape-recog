@@ -1,6 +1,7 @@
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
+specs
 CMakeScripts
 Testing
 Makefile
@@ -20,7 +21,7 @@ build/.cmake/api/v1/reply/index-2024-02-25T19-03-48-0233.json
 build/.cmake/api/v1/reply/target-OpenCVBlurCMake-Debug-22d8c0ae8ed48f09be0f.json
 build/.cmake/api/v1/reply/toolchains-v1-99265b04de7ada3aac9e.json
 BusyStreet1.jpeg
-.vscode/c_cpp_properties.json
+.vscode/*
 .vscode/settings.json
 build/shapeRecogCMake
 build/.cmake/api/v1/reply/cache-v2-1a799b0f2abd232e9058.json
@@ -32,5 +33,5 @@ build/.cmake/api/v1/reply/toolchains-v1-78e1ec32f5d5e8dda251.json
 build/.cmake/api/v1/reply/codemodel-v2-1ae424dffebd0ab11934.json
 build/.cmake/api/v1/reply/index-2024-02-29T14-38-22-0066.json
 build/.cmake/api/v1/reply/target-shapeRecogCMake-Debug-e8d756adea68d3b1f445.json
-build/.cmake/api/v1/reply/index-2024-03-23T21-40-53-0727.json
-.vscode/tasks.json
+err.txt
+build/*

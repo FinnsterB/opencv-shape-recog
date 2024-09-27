@@ -14,7 +14,6 @@ Parser::~Parser()
 /*static*/ std::vector<SpecFinder> Parser::parse(const std::string &file)
 {
     std::ifstream fileIn;
-    std::string garbage;
     std::string token;
     std::vector<SpecFinder> specFinders;
     int lineNr = 1;
@@ -80,7 +79,7 @@ Parser::~Parser()
  * @brief: Parses a single word token string, and returns
  * an int representing the SpecFinder::ColorSpecs enum.
 */
-/*static*/ int Parser::parseColor(std::string& token){
+/*static*/ int Parser::parseColor(const std::string& token){
     if (token == "roze")
     {
         return SpecFinder::PINK;
@@ -110,7 +109,7 @@ Parser::~Parser()
  * it is up to the developer to check for a "cirkel"-
  * token afterwards.
 */
-/*static*/ int Parser::parseShape(std::string& token){
+/*static*/ int Parser::parseShape(const std::string& token){
     if(token == "cirkel")
     {
         return SpecFinder::CIRCLE;
