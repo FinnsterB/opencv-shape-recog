@@ -92,8 +92,17 @@ int main(int argc, const char * argv[]) {
             //Find specified color and shape
             for (SpecFinder s : specFinders)
             {
+                // std::chrono timer
+                auto start = std::chrono::high_resolution_clock::now();
+
+                //Finding shape and color
                 cv::Mat processableImage = image.clone();
                 s.findSpec(processableImage, contours, hierarchy);
+
+                // std::chrono duration calculation
+                auto end = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+                std::cout << "Elapsed time: " << duration.count() << " microseconds" << std::endl;
             }
 
             //Draw all found contours on image

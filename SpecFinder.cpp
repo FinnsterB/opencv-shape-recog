@@ -124,13 +124,10 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
         break;
     }
 
-    //cv::Mat dilationMat(5,5,src.type(),255);
-
     //Find contours
     std::vector<std::vector<cv::Point>> allContours;
 
     findContours( src, allContours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE );
-    //std::cout << "Total contours: " << std::to_string(allContours.size()) << std::endl;
 
     //Call required shape function for this 
     switch (spec.getShape())
@@ -249,7 +246,6 @@ bool SpecFinder::findRectangle(std::vector<cv::Point>& contour)
             float errorMargin = 1.2;
             //Check if sides are not equal within margin epsilon
             if(!(aLength > bLength/errorMargin && aLength < bLength*errorMargin)){
-                //std::cout << "Rectangle found with aLength: " << aLength << " and bLength: " << bLength << std::endl;
                 return true;
             }
         }
@@ -297,7 +293,6 @@ bool SpecFinder::findSquare(std::vector<cv::Point>& contour)
             float errorMargin = 1.2;
             //Check if sides are equal within margin epsilon
             if(aLength > bLength/errorMargin && aLength < bLength*errorMargin){
-                //std::cout << "Square found with aLength: " << aLength << " and bLength: " << bLength << std::endl;
                 return true;
             }
         }
