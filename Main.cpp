@@ -52,6 +52,9 @@ int main(int argc, const char * argv[]) {
     
     cv::VideoCapture cap;
     
+    // Trying all possible capture devices until the right one is found.
+    // Starts at 4 and counts down to favor external webcams.
+    // This makes OpenCV generate warnings, but they can't be turned off.
     for (int8_t i = 4; i >= 0; i--)
     {
         try
@@ -60,25 +63,22 @@ int main(int argc, const char * argv[]) {
         }
         catch(const std::exception& e)
         {
-            //std::cerr << e.what() << '\n';
+            std::cerr << e.what() << '\n';
         }
         if(cap.isOpened()){
-            std::cout << "Camera gevonden!" << std::endl;
+            //Camera is found, continue normal flow.
             break;
         }
     }
     
     if(!cap.isOpened()){
-        std::cout << "Geen camera gevonden!" << std::endl;
+        std::cerr << "Geen camera gevonden!" << std::endl;
         return 1;
     }
-    
-	
 
-    
-	
     if(argc > 1){
-        //Batch mode
+        /******BATCH MODE******/
+
         //Parse file given in argument
         std::string fileName(argv[1]);
         specFinders = Parser::parse(fileName);
@@ -101,9 +101,12 @@ int main(int argc, const char * argv[]) {
             cv::putText(image, text, cv::Point2d(20, 20), cv::FONT_HERSHEY_PLAIN, 1,7);
             cv::imshow("Found contours", image);
             char key = cv::waitKey(20);
-            if(key == 27){
+            if(key == 27)
+            {
                 break;
-            }else if(key == 'c'){
+            }
+            else if(key == 'c')
+            {
                 for (SpecFinder s : specFinders)
                 {
                     s.startCalibration();
@@ -113,6 +116,8 @@ int main(int argc, const char * argv[]) {
     }
     else
     {
+        /******INTERACTIVE MODE******/
+
         // Start input thread
         std::thread inputThread(inputThreadFunction);
         std::cout << "Start typing (press Enter to submit):\n";
@@ -121,6 +126,7 @@ int main(int argc, const char * argv[]) {
             //Read image
             cap.read(image);
             contours.clear();
+            
             //Find specified colors and shapes
             for (SpecFinder s : specFinders)
             {
@@ -134,9 +140,13 @@ int main(int argc, const char * argv[]) {
             cv::imshow("Found contours", image);
 
             char key = cv::waitKey(20);
-            if(key == 27){
+            if(key == 27)
+            {
                 break;
-            }else if(key == 'c'){
+            }
+            // Only works by pressing the 'c' key while having OpenCV window in focus.
+            else if(key == 'c')
+            {
                 for (SpecFinder s : specFinders)
                 {
                     s.startCalibration();
@@ -147,11 +157,5 @@ int main(int argc, const char * argv[]) {
             }
         }
     }
-    
-
-    
-    
-    
-
     return 0;
 }

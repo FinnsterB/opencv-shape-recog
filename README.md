@@ -21,3 +21,8 @@ These specs are given in a file that's passed as a command line argument.
 Interactive mode takes no argument, but expects you to input the specs into the command line
 followed by \[ENTER\]. The program will start looking for all given specifications. The program
 will quit when you input "exit".
+
+### Color calibration
+If you press "C" while having an openCV window in focus, the color calibration sliders will appear.
+Ideally this is not used, as it is very clumsy and I made a nice cardboard box with lights and the 
+camera in it that should give the same lighting everytime. (Fingers Crossed ;)
