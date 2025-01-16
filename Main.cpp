@@ -13,14 +13,17 @@
 #include <atomic>
 #include <chrono>
 
+#define CLOCKSPD 3.6e9
+
 int threshold;
 cv::Mat image;
 cv::Mat originalImage;
 cv::Mat contourOutput;
 cv::Mat contourImage;
 std::vector<SpecFinder> specFinders;
-std::vector<std::vector<cv::Point>> contours;
+std::vector<SpecifiedContour> contours;
 std::vector<cv::Vec4i> hierarchy;
+
 
 // Flag to indicate when to stop input thread
 std::atomic<bool> running(true);
@@ -101,13 +104,30 @@ int main(int argc, const char * argv[]) {
 
                 // std::chrono duration calculation
                 auto end = std::chrono::high_resolution_clock::now();
-                auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-                std::cout << "Elapsed time: " << duration.count() << " microseconds" << std::endl;
+                auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+                std::cout << "Elapsed time: " << (duration * CLOCKSPD) / 1e9 << " clockcycles" << std::endl;
             }
 
             //Draw all found contours on image
-            cv::drawContours(image, contours, -1, cv::Scalar(255,0,0), 3);
+            //cv::drawContours(image, contours, -1, cv::Scalar(255,0,0), 3);
             std::string text = std::to_string(contours.size()) + " contours found";
+            for (SpecifiedContour contour : contours)
+            {
+                // This is sadly required cause OpenCV isn't very flexible in how it's functions are used.
+                std::vector<std::vector<cv::Point>> tempContour;
+                tempContour.push_back(contour.contour);
+                cv::drawContours(image, tempContour, -1, cv::Scalar(255,0,0), 3);
+
+                cv::Moments moments = cv::moments(contour.contour);
+
+                // Centroid coordinates for drawing
+                int cX = static_cast<int>(moments.m10 / moments.m00);
+                int cY = static_cast<int>(moments.m01 / moments.m00);
+
+                cv::putText(image, std::string(std::to_string(cX) + ", " + std::to_string(cY)), cv::Point(cX, cY) , cv::FONT_HERSHEY_PLAIN, 1,7);
+                cv::drawMarker(image, cv::Point(cX, cY), 1);
+            }
+            
             cv::putText(image, text, cv::Point2d(20, 20), cv::FONT_HERSHEY_PLAIN, 1,7);
             cv::imshow("Found contours", image);
             char key = cv::waitKey(20);
@@ -144,7 +164,22 @@ int main(int argc, const char * argv[]) {
                 s.findSpec(processableImage, contours, hierarchy);
             }
             //Draw found contours on image
-            cv::drawContours(image, contours, -1, cv::Scalar(255,0,0), 3);
+            //cv::drawContours(image, contours, -1, cv::Scalar(255,0,0), 3);
+            for (SpecifiedContour contour : contours)
+            {
+                // This is sadly required cause OpenCV isn't very flexible in how it's functions are used.
+                std::vector<std::vector<cv::Point>> tempContour;
+                tempContour.push_back(contour.contour);
+                cv::drawContours(image, tempContour, -1, cv::Scalar(255,0,0), 3);
+                cv::Moments moments = cv::moments(contour.contour);
+
+                // Centroid coordinates for drawing
+                int cX = static_cast<int>(moments.m10 / moments.m00);
+                int cY = static_cast<int>(moments.m01 / moments.m00);
+
+                cv::putText(image, std::string(std::to_string(cX) + ", " + std::to_string(cY)),cv::Point(cX, cY) , cv::FONT_HERSHEY_PLAIN, 1,7);
+                cv::drawMarker(image, cv::Point(cX, cY), 1);
+            }
             std::string text = std::to_string(contours.size()) + " contours found";
             cv::putText(image, text, cv::Point2d(20, 20), cv::FONT_HERSHEY_PLAIN, 1,7);
             cv::imshow("Found contours", image);
@@ -166,6 +201,7 @@ int main(int argc, const char * argv[]) {
                 Parser::parseLine(sharedInput, specFinders);
             }
         }
+        inputThread.join();
     }
     return 0;
 }

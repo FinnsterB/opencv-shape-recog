@@ -9,6 +9,18 @@
 #include <vector>
 
 /**
+ * @brief The specifiedContour struct just adds a specification so we can remember what shape
+ * the contour is in the main program.
+ */
+class SpecifiedContour{
+public:
+    SpecifiedContour() = default;
+    SpecifiedContour(std::vector<cv::Point> aContour, Specification aSpec);
+    std::vector<cv::Point> contour;
+    Specification spec;
+};
+
+/**
  * @brief The specFinder class finds the shape according to the specification stored in the spec variable.
  * The main.cpp file holds a vector of SpecFinders and executes SpecFinder::findSpec() for each SpecFinder.
  */
@@ -51,27 +63,6 @@ public:
     explicit SpecFinder(Specification& s);
     ~SpecFinder();
 
-    /**
-     * @brief All required colors
-     */
-    enum ColorSpecs{
-        UNKNOWN_COLOR,
-        PINK,
-        ORANGE,
-        YELLOW,
-        GREEN
-    };
-    /**
-     * @brief All required shapes
-     */
-    enum ShapeSpecs{
-        UNKNOWN_SHAPE,
-        CIRCLE,
-        SEMICIRCLE,
-        SQUARE,
-        RECTANGLE,
-        TRIANGLE
-    };
 
     /**
      * @brief Specification this specFinder will use to find the shape.
@@ -87,7 +78,7 @@ public:
      * @brief Filters the image according to the required color, finds every contour
      * and processes that contour with one of the find[Shape] functions below.
      */
-    void findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& contours, std::vector<cv::Vec4i> hierarchy);
+    void findSpec(cv::Mat src, std::vector<SpecifiedContour>& contours, std::vector<cv::Vec4i> hierarchy);
 
     /**
      * @brief Returns true if the provided contour is a rectangle. This is determined

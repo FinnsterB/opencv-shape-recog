@@ -1,6 +1,29 @@
 #ifndef SPECIFICATION_H
 #define SPECIFICATION_H
 
+#include <iostream>
+
+/**
+ * @brief All required colors
+ */
+enum ColorSpecs{
+    UNKNOWN_COLOR,
+    PINK,
+    ORANGE,
+    YELLOW,
+    GREEN
+};
+/**
+ * @brief All required shapes
+ */
+enum ShapeSpecs{
+    UNKNOWN_SHAPE,
+    CIRCLE,
+    SEMICIRCLE,
+    SQUARE,
+    RECTANGLE,
+    TRIANGLE
+};
 
 /**
  * @brief This class just contains enumerates for a shape and color by which the specfinder will find them.
@@ -23,6 +46,8 @@ public:
     
     void setShape(int s);
     void setColor(int c);
+
+    std::string toString();
 
 };
 

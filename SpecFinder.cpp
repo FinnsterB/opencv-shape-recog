@@ -4,6 +4,7 @@
 
 #include "opencv2/highgui/highgui.hpp"
 
+// This should be in a config file, except I don't feel like doing that atm.
 int SpecFinder::greenLow = 52;
 int SpecFinder::greenHigh = 80;
 int SpecFinder::greenSaturationLow = 50;
@@ -94,7 +95,7 @@ SpecFinder::~SpecFinder()
 /**
  *@brief Finds all shapes according to the specification of this SpecFinder instance
 */
-void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& contours, std::vector<cv::Vec4i> hierarchy)
+void SpecFinder::findSpec(cv::Mat src, std::vector<SpecifiedContour>& contours, std::vector<cv::Vec4i> hierarchy)
 {
     cv::cvtColor(src, src, cv::COLOR_BGR2HSV);
 
@@ -141,7 +142,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
             }
             if (findTriangle(contour))
             {
-                contours.push_back(contour);
+                contours.push_back(SpecifiedContour(contour, spec));
             }
             
             
@@ -157,7 +158,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
             }
             if (findSquare(contour))
             {
-                contours.push_back(contour);
+                contours.push_back(SpecifiedContour(contour, spec));
             }
             
         }
@@ -172,7 +173,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
             }
             if (findRectangle(contour))
             {
-                contours.push_back(contour);
+                contours.push_back(SpecifiedContour(contour, spec));
             }
             
         }
@@ -187,7 +188,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
             }
             if (findCircle(contour))
             {
-                contours.push_back(contour);
+                contours.push_back(SpecifiedContour(contour, spec));
             }   
         }
         
@@ -200,7 +201,7 @@ void SpecFinder::findSpec(cv::Mat src, std::vector<std::vector<cv::Point>>& cont
                 continue;
             }
             if(findSemicircle(contour)){
-                contours.push_back(contour);
+                contours.push_back(SpecifiedContour(contour, spec));
             }
         }
         
@@ -374,4 +375,9 @@ bool SpecFinder::findCircle(std::vector<cv::Point>& contour)
         return true;
     }
     return false;
+}
+
+SpecifiedContour::SpecifiedContour(std::vector<cv::Point> aContour, Specification aSpec)
+: contour(aContour), spec(aSpec)
+{
 }

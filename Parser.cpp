@@ -42,12 +42,12 @@ Parser::~Parser()
 
             //Shape parser has an edge case where 2 tokens make up SEMICIRCLE. Luckily 
             //the first token is unique so I'll just double check the last one;)
-            if (spec.getShape() == SpecFinder::SEMICIRCLE)
+            if (spec.getShape() == SEMICIRCLE)
             {
                 token = "";
                 fileIn >> token;
                 //Second check in case of SEMICIRCLE
-                if(parseShape(token) != SpecFinder::CIRCLE){
+                if(parseShape(token) != CIRCLE){
                     std::cout << "Fout! Er staat alleen het woord \"halve\" in de specificatie. Programma-output klopt mogelijk niet. Regel: " << std::to_string(lineNr) << std::endl;
                 }
 
@@ -58,7 +58,7 @@ Parser::~Parser()
             if(token != ""){
                 spec.setColor(parseColor(token));
             }
-            if(spec.getColor() != SpecFinder::UNKNOWN_COLOR && spec.getShape() != SpecFinder::UNKNOWN_SHAPE)
+            if(spec.getColor() != UNKNOWN_COLOR && spec.getShape() != UNKNOWN_SHAPE)
             {
                 SpecFinder s(spec);
                 specFinders.push_back(s);
@@ -94,12 +94,12 @@ void Parser::parseLine(const std::string &line, std::vector<SpecFinder>& specFin
 
         //Shape parser has an edge case where 2 tokens make up SEMICIRCLE. Luckily 
         //the first token is unique so I'll just double check the last one;)
-        if (spec.getShape() == SpecFinder::SEMICIRCLE)
+        if (spec.getShape() == SEMICIRCLE)
         {
             token = "";
             ssLine >> token;
             //Second check in case of SEMICIRCLE
-            if(parseShape(token) != SpecFinder::CIRCLE){
+            if(parseShape(token) != CIRCLE){
                 std::cout << "Fout! Er staat alleen het woord \"halve\" in de specificatie." << std::endl;
             }
 
@@ -110,7 +110,7 @@ void Parser::parseLine(const std::string &line, std::vector<SpecFinder>& specFin
         if(token != ""){
             spec.setColor(parseColor(token));
         }
-        if(spec.getColor() != SpecFinder::UNKNOWN_COLOR && spec.getShape() != SpecFinder::UNKNOWN_SHAPE)
+        if(spec.getColor() != UNKNOWN_COLOR && spec.getShape() != UNKNOWN_SHAPE)
         {
             for(SpecFinder otherSpec : specFinders){
                 if (spec.getColor() == otherSpec.spec.getColor() && spec.getShape() == otherSpec.spec.getShape())
@@ -132,34 +132,34 @@ void Parser::parseLine(const std::string &line, std::vector<SpecFinder>& specFin
 
 /**
  * @brief: Parses a single word token string, and returns
- * an int representing the SpecFinder::ColorSpecs enum.
+ * an int representing the ColorSpecs enum.
 */
 /*static*/ int Parser::parseColor(const std::string& token){
     if (token == "roze")
     {
-        return SpecFinder::PINK;
+        return PINK;
     }
     else if(token == "oranje")
     {
-        return SpecFinder::ORANGE;
+        return ORANGE;
     }
     else if (token == "groen")
     {
-        return SpecFinder::GREEN;
+        return GREEN;
     }
     else if (token == "geel")
     {
-        return SpecFinder::YELLOW;
+        return YELLOW;
     }
     else
     {
-        return SpecFinder::UNKNOWN_COLOR;
+        return UNKNOWN_COLOR;
     }
 }
 
 /**
  * @brief: Parses a single word token string, and returns
- * an int representing the SpecFinder::Shapespecs enum.
+ * an int representing the Shapespecs enum.
  * input string "halve" yields SEMICIRCLE as a result,
  * it is up to the developer to check for a "cirkel"-
  * token afterwards.
@@ -167,27 +167,27 @@ void Parser::parseLine(const std::string &line, std::vector<SpecFinder>& specFin
 /*static*/ int Parser::parseShape(const std::string& token){
     if(token == "cirkel")
     {
-        return SpecFinder::CIRCLE;
+        return CIRCLE;
     }
     else if (token == "driehoek")
     {
-        return SpecFinder::TRIANGLE;
+        return TRIANGLE;
     }
     else if (token == "rechthoek")
     {
-        return SpecFinder::RECTANGLE;
+        return RECTANGLE;
     }
     else if (token == "vierkant")
     {
-        return SpecFinder::SQUARE;
+        return SQUARE;
     }
     else if (token == "halve")
     {
-        return SpecFinder::SEMICIRCLE;
+        return SEMICIRCLE;
     }
     else
     {
-        return SpecFinder::UNKNOWN_SHAPE;
+        return UNKNOWN_SHAPE;
     }
     
 }
