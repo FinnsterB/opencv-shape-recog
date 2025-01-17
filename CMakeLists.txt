@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g")
 # Function to enable warnings
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     # GCC/Clang warnings
-    add_compile_options(-Wall -Wextra -Wpedantic)
+    add_compile_options(-Wall -Wextra -Wpedantic -Wconversion) 
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     # MSVC warnings
     add_compile_options(/W4)

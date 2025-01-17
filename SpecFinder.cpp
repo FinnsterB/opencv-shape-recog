@@ -237,14 +237,14 @@ bool SpecFinder::findRectangle(std::vector<cv::Point>& contour)
             //Calculate side length a
             int dXa = abs(approx.at(0).x - approx.at(1).x);
             int dYa = abs(approx.at(0).y - approx.at(1).y);
-            int aLength = sqrt(pow(dXa,2)+pow(dYa,2)); //Pythagorean theorem
+            double aLength = sqrt(pow(dXa,2)+pow(dYa,2)); //Pythagorean theorem
 
             //Calculate side length b
             int dXb = abs(approx.at(1).x - approx.at(2).x);
             int dYb = abs(approx.at(1).y - approx.at(2).y);
-            int bLength = sqrt(pow(dXb,2)+pow(dYb,2)); //Pythagorean theorem
+            double bLength = sqrt(pow(dXb,2)+pow(dYb,2)); //Pythagorean theorem
 
-            float errorMargin = 1.2;
+            double errorMargin = 1.2;
             //Check if sides are not equal within margin epsilon
             if(!(aLength > bLength/errorMargin && aLength < bLength*errorMargin)){
                 return true;
@@ -284,14 +284,14 @@ bool SpecFinder::findSquare(std::vector<cv::Point>& contour)
             //Calculate side length a
             int dXa = abs(approx.at(0).x - approx.at(1).x);
             int dYa = abs(approx.at(0).y - approx.at(1).y);
-            int aLength = sqrt(pow(dXa,2)+pow(dYa,2)); //Pythagorean theorem
+            double aLength = sqrt(pow(dXa,2)+pow(dYa,2)); //Pythagorean theorem
             
             //Calculate side length b
             int dXb = abs(approx.at(1).x - approx.at(2).x);
             int dYb = abs(approx.at(1).y - approx.at(2).y);
-            int bLength = sqrt(pow(dXb,2)+pow(dYb,2)); //Pythagorean theorem
+            double bLength = sqrt(pow(dXb,2)+pow(dYb,2)); //Pythagorean theorem
 
-            float errorMargin = 1.2;
+            double errorMargin = 1.2;
             //Check if sides are equal within margin epsilon
             if(aLength > bLength/errorMargin && aLength < bLength*errorMargin){
                 return true;
@@ -339,9 +339,9 @@ bool SpecFinder::findSemicircle(std::vector<cv::Point>& contour)
         int arcPoints = 0, straightPoints = 0;
 
         // We assume that points near the diameter will be horizontally aligned
-        float errorMargin = 0.1;
+        double errorMargin = 0.1;
         for (size_t j = 0; j < contour.size(); j++) {
-            if (std::abs(contour.at(j).y - center.y) < radius * errorMargin) {
+            if (std::abs(contour.at(j).y - (int)center.y) < (int)(radius * errorMargin)) {
                 straightPoints++;
             } else {
                 arcPoints++;
@@ -351,7 +351,7 @@ bool SpecFinder::findSemicircle(std::vector<cv::Point>& contour)
         // Check if there are significantly more arc points than straight points
         if (arcPoints > straightPoints) {
             // Likely a semi-circle
-            //Check if there's no sneaky rectangle
+            // Check if there's no sneaky rectangle
             if (!findRectangle(contour))
             {
                 return true;
@@ -377,7 +377,7 @@ bool SpecFinder::findCircle(std::vector<cv::Point>& contour)
     return false;
 }
 
-SpecifiedContour::SpecifiedContour(std::vector<cv::Point> aContour, Specification aSpec)
+SpecifiedContour::SpecifiedContour(const std::vector<cv::Point>& aContour, Specification aSpec)
 : contour(aContour), spec(aSpec)
 {
 }

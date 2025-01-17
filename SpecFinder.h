@@ -15,7 +15,7 @@
 class SpecifiedContour{
 public:
     SpecifiedContour() = default;
-    SpecifiedContour(std::vector<cv::Point> aContour, Specification aSpec);
+    SpecifiedContour(const std::vector<cv::Point>&, Specification aSpec);
     std::vector<cv::Point> contour;
     Specification spec;
 };

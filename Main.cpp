@@ -105,7 +105,7 @@ int main(int argc, const char * argv[]) {
                 // std::chrono duration calculation
                 auto end = std::chrono::high_resolution_clock::now();
                 auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-                std::cout << "Elapsed time: " << (duration * CLOCKSPD) / 1e9 << " clockcycles" << std::endl;
+                std::cout << "Elapsed time: " << ((double)duration * CLOCKSPD) / 1e9 << " clockcycles" << std::endl;
             }
 
             //Draw all found contours on image
@@ -113,7 +113,8 @@ int main(int argc, const char * argv[]) {
             std::string text = std::to_string(contours.size()) + " contours found";
             for (SpecifiedContour contour : contours)
             {
-                // This is sadly required cause OpenCV isn't very flexible in how it's functions are used.
+                // This is sadly required cause OpenCV isn't very flexible in how it's functions are used,
+                // DrawContours expects an array of contours.
                 std::vector<std::vector<cv::Point>> tempContour;
                 tempContour.push_back(contour.contour);
                 cv::drawContours(image, tempContour, -1, cv::Scalar(255,0,0), 3);
@@ -129,8 +130,12 @@ int main(int argc, const char * argv[]) {
             }
             
             cv::putText(image, text, cv::Point2d(20, 20), cv::FONT_HERSHEY_PLAIN, 1,7);
-            cv::imshow("Found contours", image);
-            char key = cv::waitKey(20);
+            if (image.empty()) {
+                std::cerr << "Error: Empty image passed to cv::imshow!" << std::endl;
+            }else{
+                cv::imshow("Found contours", image);
+            }
+            int key = cv::waitKey(20);
             if(key == 27)
             {
                 break;
@@ -182,9 +187,13 @@ int main(int argc, const char * argv[]) {
             }
             std::string text = std::to_string(contours.size()) + " contours found";
             cv::putText(image, text, cv::Point2d(20, 20), cv::FONT_HERSHEY_PLAIN, 1,7);
-            cv::imshow("Found contours", image);
+            if (image.empty()) {
+                std::cerr << "Error: Empty image passed to cv::imshow!" << std::endl;
+            }else{
+                cv::imshow("Found contours", image);
+            }
 
-            char key = cv::waitKey(20);
+            int key = cv::waitKey(20);
             if(key == 27)
             {
                 break;
