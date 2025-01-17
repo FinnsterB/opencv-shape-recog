@@ -207,6 +207,7 @@ int main(int argc, const char * argv[]) {
                 }
             }
             if(inputAvailable){
+                inputAvailable = false;
                 Parser::parseLine(sharedInput, specFinders);
             }
         }
