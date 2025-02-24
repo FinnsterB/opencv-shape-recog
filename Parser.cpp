@@ -3,6 +3,21 @@
 #include <fstream>
 #include <iostream>
 
+bool Parser::checkComment(std::string &token)
+{
+    std::string filtered;
+    bool containsComment = false;
+    for (char c : token) {
+        if (c == '#') {
+            containsComment = true;
+            break; // Stop at '#'
+        }
+        filtered += c; // Append valid characters
+    }
+    token = filtered;
+    return containsComment;
+}
+
 Parser::Parser(/* args */)
 {
 }
@@ -15,6 +30,9 @@ Parser::~Parser()
 {   
     std::ifstream fileIn;
     std::string token;
+    std::string unfilteredToken;
+    std::string wrongColorToken;
+    std::string wrongShapeToken;
     std::vector<SpecFinder> specFinders;
     int lineNr = 1;
 
@@ -24,22 +42,33 @@ Parser::~Parser()
         
 
         fileIn >> token;
-        
-        //Check if line is a comment and skip it if it is
-        if(token != "" && token.at(0) == '#'){
-            while (fileIn.peek() != '\n')
-            {
-                fileIn.get();
-            }   
-            lineNr++;
+        //Check if entire line is a comment and clear if it is
+        if(checkComment(token))
+        {
+            while(fileIn.peek() != '\n')
+                {
+                    fileIn.get();
+                }
         }
 
 
         //Parsing first token of line
         if(token != ""){
+            if (checkComment(token))
+            {
+                std::cout << "Fout! Regel " << lineNr << " slechts deels ingevuld. Overgeslagen!" << std::endl;
+                while(fileIn.peek() != '\n')
+                {
+                    fileIn.get();
+                }
+                continue;
+            }
             Specification spec;
             spec.setShape(parseShape(token));
-
+            if(spec.getShape() == UNKNOWN_SHAPE)
+            {
+                wrongShapeToken = token;
+            }
             //Shape parser has an edge case where 2 tokens make up SEMICIRCLE. Luckily 
             //the first token is unique so I'll just double check the last one;)
             if (spec.getShape() == SEMICIRCLE)
@@ -47,7 +76,8 @@ Parser::~Parser()
                 token = "";
                 fileIn >> token;
                 //Second check in case of SEMICIRCLE
-                if(parseShape(token) != CIRCLE){
+                if(parseShape(token) != CIRCLE)
+                {
                     std::cout << "Fout! Er staat alleen het woord \"halve\" in de specificatie. Programma-output klopt mogelijk niet. Regel: " << std::to_string(lineNr) << std::endl;
                 }
 
@@ -55,18 +85,41 @@ Parser::~Parser()
             token = "";
             fileIn >> token;
             //Parse next token to get the color
-            if(token != ""){
+            if(token != "")
+            {
+                checkComment(token);
                 spec.setColor(parseColor(token));
+                if(spec.getColor() == UNKNOWN_COLOR)
+                {
+                    wrongColorToken = token;
+                }
+                //Clear the rest of the line
+                while(fileIn.peek() != '\n')
+                {
+                    fileIn.get();
+                    if(fileIn.eof()){
+                        break;
+                    }
+                }
             }
             if(spec.getColor() != UNKNOWN_COLOR && spec.getShape() != UNKNOWN_SHAPE)
             {
                 SpecFinder s(spec);
                 specFinders.push_back(s);
-            }else{
-                std::cout << "Fout! Verkeerde specificatie opgegeven op regel: " << std::to_string(lineNr) << std::endl;
             }
-
-
+            else
+            {
+                if(spec.getColor() == UNKNOWN_COLOR)
+                {
+                    std::cout << "Fout! Verkeerde kleur \"" << wrongColorToken << "\" opgegeven op regel: " << std::to_string(lineNr) << " Kies uit: oranje, geel, groen of roze." << std::endl;
+                    wrongColorToken = "";
+                }
+                if(spec.getShape() == UNKNOWN_SHAPE)
+                {
+                    std::cout << "Fout! Verkeerde vorm \"" << wrongShapeToken << "\" opgegeven op regel: " << std::to_string(lineNr) << " Kies uit: vierkant, rechthoek, cirkel, driehoek of halve cirkel." << std::endl;
+                    wrongShapeToken = "";
+                }
+            }
         }
         lineNr++;
     }
@@ -123,7 +176,12 @@ void Parser::parseLine(const std::string &line, std::vector<SpecFinder>& specFin
             SpecFinder s(spec);
             specFinders.push_back(s);
         }else{
-            std::cout << "Fout! Verkeerde specificatie opgegeven!" << std::endl;
+            if(spec.getColor() == UNKNOWN_COLOR){
+                std::cout << "Fout! Verkeerde specificatie opgegeven!" << " Onbekende kleur! Kies uit: oranje, geel, groen of roze." << std::endl;
+            }
+            if(spec.getShape() == UNKNOWN_SHAPE){
+                std::cout << "Fout! Verkeerde specificatie opgegeven!" << " Onbekende vorm! Kies uit: vierkant, rechthoek, cirkel, driehoek of halve cirkel." << std::endl;
+            }
         }
 
 

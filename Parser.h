@@ -20,6 +20,11 @@ private:
      * @brief This function parses a shape token into a shape enumeration.
      */
     static int parseShape(const std::string &token);
+    /**
+     * @brief This function checks if a token contains a # and returns true if it 
+     * does. It also gets rid of any content after the #.
+     */
+    static bool checkComment(std::string &token);
 
 public:
     Parser(/* args */);

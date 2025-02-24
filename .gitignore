@@ -36,3 +36,4 @@ build/.cmake/api/v1/reply/target-shapeRecogCMake-Debug-e8d756adea68d3b1f445.json
 err.txt
 build/*
 specs
+do-cppcheck.sh
